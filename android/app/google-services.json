@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "554964531740",
+    "project_id": "money-saver-b6c7a",
+    "storage_bucket": "money-saver-b6c7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554964531740:android:5e10a563d411450ea13dd9",
+        "android_client_info": {
+          "package_name": "com.example.money_saver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "554964531740-o54kptuuffmbbp2mjtuqumat942ej7ed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.money_saver",
+            "certificate_hash": "d638c59a9976ee4cc3aa5aa76fa23a2f17c909b0"
+          }
+        },
+        {
+          "client_id": "554964531740-97moi7u7giom5a5qf5osufuhsg6jbovi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7elLLw1Id7J2D7NvDPHUPXhcxFVaF9gM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "554964531740-97moi7u7giom5a5qf5osufuhsg6jbovi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "554964531740-shk6j0aqhl53hhe0aqe5hr9af8kuiod3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.moneySaver"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
