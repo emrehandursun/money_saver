@@ -21,7 +21,7 @@ class _WelcomePageState extends State<WelcomePage> {
       backgroundColor: themeData.colorScheme.primaryContainer,
       appBar: AppBar(
         title: Text(
-          'Rainbow Six Siege',
+          'Money Saver',
           style: themeData.appBarTheme.titleTextStyle,
         ),
         backgroundColor: themeData.appBarTheme.backgroundColor,
