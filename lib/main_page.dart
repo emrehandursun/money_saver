@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:money_saver/pages/authentication_page.dart';
 import 'package:provider/provider.dart';
 
 import 'provider/application/application.dart';
@@ -49,12 +51,29 @@ class _MainPageState extends State<MainPage> {
         );
 
       case ProgramStatus.readyApp:
-        return Scaffold(
-          appBar: const MainAppBar(),
-          body: applicationProvider.selectedNavigationBarPageWidget,
-          backgroundColor: themeData.colorScheme.primaryContainer,
-          bottomNavigationBar: const MainNavigationBar(),
+        return StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: themeData.colorScheme.primary,
+                body: Center(
+                  child: Loader(color: themeData.colorScheme.onPrimary),
+                ),
+              );
+            }
+            if (snapshot.hasData) {
+              return Scaffold(
+                appBar: const MainAppBar(),
+                body: applicationProvider.selectedNavigationBarPageWidget,
+                backgroundColor: themeData.colorScheme.primaryContainer,
+                bottomNavigationBar: const MainNavigationBar(),
+              );
+            }
+            return const AuthenticationPage();
+          },
         );
+
       case ProgramStatus.initializingDevice:
 
       default:
