@@ -76,8 +76,8 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
                   isLoggingMode ? const LoginForm() : const RegisterForm(),
-                  isLoggingMode ? const Login() : const Register(),
                 ],
               ),
             ),
@@ -98,12 +98,45 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      color: Colors.red,
+      width: double.infinity,
+      child: Column(
+        children: [
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Email',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Password',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
 class RegisterForm extends StatefulWidget {
-  RegisterForm({Key? key}) : super(key: key);
+  const RegisterForm({Key? key}) : super(key: key);
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
