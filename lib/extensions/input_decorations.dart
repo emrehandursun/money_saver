@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 InputDecoration inputDecoration(ThemeData themeData, String labelText) {
   return InputDecoration(
+    labelStyle: const TextStyle(fontSize: 16),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: themeData.colorScheme.onPrimary),
       borderRadius: const BorderRadius.all(Radius.circular(4)),
