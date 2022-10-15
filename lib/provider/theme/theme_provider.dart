@@ -11,6 +11,7 @@ class ThemeProvider with ChangeNotifier {
         secondaryContainer: Color(0xff4B4949),
       ),
       errorColor: const Color.fromARGB(255, 244, 65, 53),
+      focusColor: const Color(0xff5FC85B),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xff2C2B2A),
         titleTextStyle: TextStyle(
@@ -73,6 +74,7 @@ class ThemeProvider with ChangeNotifier {
         secondaryContainer: Color(0xffDCDAD9),
       ),
       errorColor: const Color.fromARGB(255, 244, 65, 53),
+      focusColor: const Color(0xff53B749),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xffEEECEB),
         titleTextStyle: TextStyle(

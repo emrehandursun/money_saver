@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_saver/extensions/input_decorations.dart';
+import 'package:money_saver/extensions/string_extensions.dart';
+import 'package:money_saver/widgets/password_validator/password_validator.dart';
 
 class AuthenticationPage extends StatefulWidget {
   const AuthenticationPage({Key? key}) : super(key: key);
@@ -96,38 +99,86 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isPasswordValidate = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red,
+    final ThemeData themeData = Theme.of(context);
+    return SizedBox(
       width: double.infinity,
       child: Column(
         children: [
           TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Email',
-            ),
+            controller: _emailController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: inputDecoration(themeData, 'E-mail'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+                return 'Please enter your e-mail';
+              } else if (!value.isValidEmail()) {
+                return 'Please enter a valid e-mail';
               }
               return null;
             },
           ),
+          const SizedBox(height: 12),
           TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Password',
-            ),
+            controller: _passwordController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: inputDecoration(themeData, 'Password'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+                return 'Please enter your password';
               }
               return null;
             },
+            onChanged: (value) => setState(() {}),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('Login'),
+          if ((_passwordController.text.isNotEmpty)) const SizedBox(height: 12),
+          if ((_passwordController.text.isNotEmpty))
+            Align(
+              alignment: Alignment.centerLeft,
+              child: PasswordValidator(
+                successColor: themeData.focusColor,
+                failureColor: themeData.colorScheme.primary,
+                minLength: 8,
+                uppercaseCharCount: 0,
+                numericCharCount: 3,
+                specialCharCount: 1,
+                normalCharCount: 3,
+                height: 100,
+                onSuccess: () {
+                  isPasswordValidate = true;
+                },
+                onFail: () {
+                  isPasswordValidate = false;
+                },
+                controller: _passwordController,
+              ),
+            ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {
+              if (isPasswordValidate && _emailController.text.isValidEmail()) {}
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: themeData.colorScheme.primary.withOpacity(0.5),
+                  width: 1,
+                ),
+                color: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+              ),
+              child: Text(
+                'Login',
+                style: TextStyle(
+                  color: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
+                ),
+              ),
+            ),
           ),
         ],
       ),
