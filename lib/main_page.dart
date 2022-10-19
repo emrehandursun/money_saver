@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:money_saver/pages/authentication_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'provider/application/application.dart';
 import 'provider/application/application_provider.dart';
@@ -20,6 +22,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    clearSecureStorageOnReinstall();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeApplication(context));
   }
 
@@ -84,5 +87,17 @@ class _MainPageState extends State<MainPage> {
           ),
         );
     }
+  }
+}
+
+Future<void> clearSecureStorageOnReinstall() async {
+  String key = 'hasRunBefore';
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool hasRunBefore = prefs.getBool(key) ?? false;
+  if (!hasRunBefore) {
+    FlutterSecureStorage storage = const FlutterSecureStorage();
+    await storage.deleteAll();
+    FirebaseAuth.instance.signOut();
+    prefs.setBool(key, true);
   }
 }

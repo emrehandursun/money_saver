@@ -32,5 +32,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:554964531740:ios:e1fe023011fb689aa13dd9</string>
+	<key>DATABASE_URL</key>
+	<string>https://money-saver-b6c7a-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

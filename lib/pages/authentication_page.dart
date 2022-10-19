@@ -1,7 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_saver/extensions/input_decorations.dart';
 import 'package:money_saver/extensions/string_extensions.dart';
+import 'package:money_saver/provider/application/application.dart';
+import 'package:money_saver/provider/application/application_provider.dart';
 import 'package:money_saver/widgets/password_validator/password_validator.dart';
+import 'package:provider/provider.dart';
 
 class AuthenticationPage extends StatefulWidget {
   const AuthenticationPage({Key? key}) : super(key: key);
@@ -131,7 +136,12 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 12),
           InkWell(
             onTap: () {
-              if (isPasswordValidate && _emailController.text.isValidEmail()) {}
+              if (isPasswordValidate && _emailController.text.isValidEmail()) {
+                FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
+                  final ApplicationProvider applicationProvider = Provider.of<ApplicationProvider>(context, listen: false);
+                  applicationProvider.setNavigationBarPage(NavigationBarPage.home);
+                });
+              }
             },
             child: Container(
               padding: const EdgeInsets.all(8),
@@ -254,8 +264,20 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           const SizedBox(height: 12),
           InkWell(
-            onTap: () {
-              if (isPasswordValidate && _emailController.text.isValidEmail()) {}
+            onTap: () async {
+              if (_nameController.text.isNotEmpty && _surnameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()) {
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
+                  FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set({
+                    'name': _nameController.text,
+                    'surname': _surnameController.text,
+                    'email': _emailController.text,
+                    'uid': value.user!.uid,
+                  }).then((value) {
+                    ApplicationProvider applicationProvider = Provider.of<ApplicationProvider>(context, listen: false);
+                    applicationProvider.setNavigationBarPage(NavigationBarPage.home);
+                  });
+                });
+              }
             },
             child: Container(
               padding: const EdgeInsets.all(8),
