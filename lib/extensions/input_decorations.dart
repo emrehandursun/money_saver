@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
-InputDecoration inputDecoration(ThemeData themeData, String labelText) {
+InputDecoration inputDecoration(ThemeData themeData, String labelText, {bool forPassword = false, void Function()? onTap}) {
   return InputDecoration(
+    suffix: forPassword
+        ? InkWell(
+            onTap: onTap,
+            child: const Icon(Icons.visibility),
+          )
+        : null,
     labelStyle: const TextStyle(fontSize: 16),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: themeData.colorScheme.onPrimary),

@@ -21,16 +21,14 @@ class ApplicationProvider with ChangeNotifier, DiagnosticableTreeMixin {
     try {
       if (status == ProgramStatus.none) {
         status = ProgramStatus.initializingDevice;
-        notifyListeners();
       }
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-
       status = ProgramStatus.readyApp;
-      notifyListeners();
     } catch (e) {
       status = ProgramStatus.applicationError;
+    } finally {
       notifyListeners();
     }
   }

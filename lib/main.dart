@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_saver/provider/customer/customer_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
 
   List<SingleChildWidget> _createProviders() {
     return [
+      ChangeNotifierProvider(create: (_) => CustomerProvider()),
       ChangeNotifierProvider(create: (_) => ApplicationProvider(selectedNavigationBarPageWidget: const HomePage(), selectedNavigationBarPage: NavigationBarPage.home, status: ProgramStatus.none)),
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ChangeNotifierProvider(create: (_) => SettingsProvider(themeStatus: ThemeStatus.light)),

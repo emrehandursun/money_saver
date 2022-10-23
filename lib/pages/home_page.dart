@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,9 @@ class _HomePageState extends State<HomePage> {
     final themeData = Theme.of(context);
     return Center(
       child: InkWell(
-        onTap: () {
+        onTap: () async {
+          var user = await FirebaseFirestore.instance.collection('users').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+          debugPrint(user.docs.first.data().toString());
           FirebaseAuth.instance.signOut();
         },
         child: Text(
