@@ -4,23 +4,25 @@ class User extends ModelBase {
   String? firstName;
   String? familyName;
   String? userFullName;
-  String? eMail;
+  String? email;
   String? phoneNumber;
   String? nationalIdentityNo;
+  String? uid;
   bool? verified;
   bool? active;
 
   User();
 
   User.fromMap(Map<String, dynamic> data) : super.fromMap(data) {
-    firstName = data['FirstName'];
-    familyName = data['FamilyName'];
-    userFullName = data['UserFullName'];
-    eMail = data['EMail'];
-    phoneNumber = data['PhoneNumber'];
-    nationalIdentityNo = data['NationalIdentityNo'];
-    verified = data['Verified'];
-    active = data['Active'];
+    firstName = data['firstName'];
+    familyName = data['familyName'];
+    userFullName = data['userFullName'] = '$firstName $familyName';
+    email = data['email'];
+    phoneNumber = data['phoneNumber'];
+    nationalIdentityNo = data['nationalIdentityNo'];
+    uid = data['uid'];
+    verified = data['verified'];
+    active = data['active'];
   }
 
   @override
@@ -29,7 +31,7 @@ class User extends ModelBase {
       'FirstName': firstName,
       'FamilyName': familyName,
       'UserFullName': userFullName,
-      'EMail': eMail,
+      'EMail': email,
       'PhoneNumber': phoneNumber,
       'NationalIdentityNo': nationalIdentityNo,
       'Verified': verified,

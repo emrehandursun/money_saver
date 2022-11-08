@@ -23,45 +23,50 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     final ThemeData themeData = Theme.of(context);
     return Scaffold(
       backgroundColor: themeData.colorScheme.primaryContainer,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              isLoggingMode ? 'Login Form' : 'Register Form',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: themeData.colorScheme.primary,
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: themeData.colorScheme.primary.withOpacity(0.2),
-                      width: 2,
-                    ),
-                    color: themeData.colorScheme.onPrimaryContainer,
+                const SizedBox(height: 40),
+                Text(
+                  isLoggingMode ? 'Login Form' : 'Register Form',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: themeData.colorScheme.primary,
                   ),
-                  child: isLoggingMode ? const LoginForm() : const RegisterForm(),
                 ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      isLoggingMode = !isLoggingMode;
-                    });
-                  },
-                  child: Text(isLoggingMode ? 'Don\'t have an account? Register here' : 'Already have an account? Login here'),
+                const SizedBox(height: 40),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: themeData.colorScheme.primary.withOpacity(0.2),
+                          width: 2,
+                        ),
+                        color: themeData.colorScheme.onPrimaryContainer,
+                      ),
+                      child: isLoggingMode ? const LoginForm() : const RegisterForm(),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isLoggingMode = !isLoggingMode;
+                        });
+                      },
+                      child: Text(isLoggingMode ? 'Don\'t have an account? Register here' : 'Already have an account? Login here'),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -118,32 +123,10 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
             },
             onChanged: (value) => setState(() {}),
           ),
-          if ((_passwordController.text.isNotEmpty)) const SizedBox(height: 12),
-          if ((_passwordController.text.isNotEmpty))
-            Align(
-              alignment: Alignment.centerLeft,
-              child: PasswordValidator(
-                successColor: themeData.focusColor,
-                failureColor: themeData.colorScheme.primary,
-                minLength: 8,
-                uppercaseCharCount: 0,
-                numericCharCount: 3,
-                specialCharCount: 1,
-                normalCharCount: 3,
-                height: 100,
-                onSuccess: () {
-                  isPasswordValidate = true;
-                },
-                onFail: () {
-                  isPasswordValidate = false;
-                },
-                controller: _passwordController,
-              ),
-            ),
           const SizedBox(height: 12),
           InkWell(
             onTap: () async {
-              if (isPasswordValidate && _emailController.text.isValidEmail()) {
+              if (_emailController.text.isValidEmail()) {
                 try {
                   await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
                     final ApplicationProvider applicationProvider = Provider.of<ApplicationProvider>(context, listen: false);

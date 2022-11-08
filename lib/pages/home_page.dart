@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:money_saver/provider/customer/customer_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,8 +18,8 @@ class _HomePageState extends State<HomePage> {
     return Center(
       child: InkWell(
         onTap: () async {
-          var user = await FirebaseFirestore.instance.collection('users').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
-          debugPrint(user.docs.first.data().toString());
+          final customer = await context.read<CustomerProvider>().getCurrent();
+          debugPrint(customer?.user?.email ?? "-");
           FirebaseAuth.instance.signOut();
         },
         child: Text(
