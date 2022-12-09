@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticationProvider authenticationProvider = context.read<AuthenticationProvider>();
+    final AuthenticationProvider authenticationProvider = context.watch<AuthenticationProvider>();
     final ThemeData themeData = Theme.of(context);
     return Center(
       child: SingleChildScrollView(

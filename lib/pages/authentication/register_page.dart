@@ -9,12 +9,17 @@ import 'package:provider/provider.dart';
 
 import '../../provider/authentication/authentication_provider.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  @override
   Widget build(BuildContext context) {
-    final AuthenticationProvider authenticationProvider = context.read<AuthenticationProvider>();
+    final AuthenticationProvider authenticationProvider = context.watch<AuthenticationProvider>();
     final ThemeData themeData = Theme.of(context);
     return Center(
       child: SingleChildScrollView(
