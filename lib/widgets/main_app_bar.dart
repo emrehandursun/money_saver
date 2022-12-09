@@ -14,6 +14,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         'Money Saver',
         style: themeData.appBarTheme.titleTextStyle,
       ),
+      centerTitle: true,
       backgroundColor: themeData.appBarTheme.backgroundColor,
     );
   }

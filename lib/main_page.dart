@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:money_saver/pages/authentication_page.dart';
+import 'package:money_saver/pages/authentication/authentication_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,14 +57,6 @@ class _MainPageState extends State<MainPage> {
         return StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                backgroundColor: themeData.colorScheme.primary,
-                body: Center(
-                  child: Loader(color: themeData.colorScheme.onPrimary),
-                ),
-              );
-            }
             if (snapshot.hasData) {
               return Scaffold(
                 appBar: const MainAppBar(),

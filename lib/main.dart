@@ -7,6 +7,7 @@ import 'main_page.dart';
 import 'pages/home_page.dart';
 import 'provider/application/application.dart';
 import 'provider/application/application_provider.dart';
+import 'provider/authentication/authentication_provider.dart';
 import 'provider/settings/settings_provider.dart';
 import 'provider/theme/theme_provider.dart';
 import 'provider/theme/theme_status.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => ApplicationProvider(selectedNavigationBarPageWidget: const HomePage(), selectedNavigationBarPage: NavigationBarPage.home, status: ProgramStatus.none)),
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ChangeNotifierProvider(create: (_) => SettingsProvider(themeStatus: ThemeStatus.light)),
+      ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
     ];
   }
 

@@ -41,19 +41,31 @@ class _UsersPageState extends State<UsersPage> {
                 } else {
                   userList = snapshot.data;
                 }
-                return ListView.builder(
-                  itemCount: userList.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    final user = userList[index];
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.all(8),
-                      color: themeData.colorScheme.onPrimaryContainer,
-                      child: Text(user.firstName ?? 'null'),
-                    );
-                  },
+                return Column(
+                  children: [
+                    ListView.builder(
+                      itemCount: userList.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        final user = userList[index];
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.all(8),
+                          color: themeData.colorScheme.onPrimaryContainer,
+                          child: Text(user.firstName ?? 'null'),
+                        );
+                      },
+                    ),
+                    InkWell(
+                        onTap: () {
+                          final newCityRef = FirebaseFirestore.instance.collection("cities").doc();
+                          final data = {"name": "Tokyo", "country": "Japan", "id": newCityRef.id};
+                          newCityRef.set(data).then((_) => print("Added Data with ID: ${newCityRef.id}"));
+                          //FirebaseFirestore.instance.collection("cities").add(data).then((documentSnapshot) => print("Added Data with ID: ${documentSnapshot.id}"));
+                        },
+                        child: const Text('data')),
+                  ],
                 );
               } else if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
