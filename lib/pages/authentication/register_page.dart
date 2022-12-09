@@ -21,46 +21,47 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final AuthenticationProvider authenticationProvider = context.watch<AuthenticationProvider>();
     final ThemeData themeData = Theme.of(context);
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              Text(
-                'Register Form',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: themeData.colorScheme.primary,
+    return Container(
+      decoration: BoxDecoration(
+        color: themeData.colorScheme.onPrimary.withOpacity(0.2),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40),
+        ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  'Register Form',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: themeData.colorScheme.primary,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: themeData.colorScheme.primary.withOpacity(0.2),
-                        width: 2,
-                      ),
-                      color: themeData.colorScheme.onPrimaryContainer,
+                const SizedBox(height: 40),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: RegisterForm(context: context),
                     ),
-                    child: const RegisterForm(),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      authenticationProvider.changeHomeState(AuthenticationState.login);
-                    },
-                    child: const Text('Already have an account? Login here'),
-                  ),
-                ],
-              ),
-            ],
+                    TextButton(
+                      onPressed: () {
+                        authenticationProvider.changeHomeState(AuthenticationState.login);
+                      },
+                      child: const Text('Already have an account? Login here'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -69,7 +70,8 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({Key? key}) : super(key: key);
+  final BuildContext context;
+  const RegisterForm({Key? key, required this.context}) : super(key: key);
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -82,6 +84,27 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
   final TextEditingController _passwordController = TextEditingController();
   bool isHidden = true;
   bool isPasswordValidate = false;
+
+  var controller = AuthenticationProvider();
+  @override
+  void initState() {
+    controller = widget.context.watch<AuthenticationProvider>();
+    controller.addListener(() {
+      if (controller.authenticationState == AuthenticationState.login) {
+        _firstNameController.clear();
+        _familyNameController.clear();
+        _emailController.clear();
+        _passwordController.clear();
+      } else if (controller.authenticationState == AuthenticationState.register) {
+        _firstNameController.clear();
+        _familyNameController.clear();
+        _emailController.clear();
+        _passwordController.clear();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);

@@ -45,7 +45,7 @@ class LoginPage extends StatelessWidget {
                       ),
                       color: themeData.colorScheme.onPrimaryContainer,
                     ),
-                    child: const LoginForm(),
+                    child: LoginForm(context: context),
                   ),
                   TextButton(
                     onPressed: () {
@@ -64,7 +64,8 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  final BuildContext context;
+  const LoginForm({Key? key, required this.context}) : super(key: key);
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -75,6 +76,23 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
   final TextEditingController _passwordController = TextEditingController();
   bool isHidden = true;
   bool isPasswordValidate = false;
+
+  var controller = AuthenticationProvider();
+  @override
+  void initState() {
+    controller = widget.context.watch<AuthenticationProvider>();
+    controller.addListener(() {
+      if (controller.authenticationState == AuthenticationState.login) {
+        _emailController.clear();
+        _passwordController.clear();
+      } else if (controller.authenticationState == AuthenticationState.register) {
+        _emailController.clear();
+        _passwordController.clear();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
@@ -94,6 +112,7 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
               }
               return null;
             },
+            onChanged: (value) => setState(() {}),
           ),
           const SizedBox(height: 12),
           TextFormField(
