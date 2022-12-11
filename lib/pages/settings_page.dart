@@ -28,6 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
             size: themeData.iconTheme.size,
           ),
         ),
+        centerTitle: true,
         title: Text(
           'Settings',
           style: themeData.appBarTheme.titleTextStyle,

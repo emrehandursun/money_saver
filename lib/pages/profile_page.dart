@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../provider/settings/settings_provider.dart';
 import 'settings_page.dart';
+import 'user_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -26,9 +27,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 final settingsProvider = context.read<SettingsProvider>();
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => SettingsPage(
-                            settingsProvider: settingsProvider,
-                          )),
+                    builder: (context) => SettingsPage(
+                      settingsProvider: settingsProvider,
+                    ),
+                  ),
                 );
               },
               child: Container(
@@ -98,6 +100,50 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(width: 6.0),
                         Text(
                           'Users',
+                          style: themeData.textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                    Icon(
+                      Icons.arrow_right_rounded,
+                      color: themeData.iconTheme.color,
+                      size: themeData.iconTheme.size,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const UserPage(),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.maxFinite,
+                padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                decoration: BoxDecoration(
+                  color: themeData.colorScheme.onPrimaryContainer,
+                  border: Border.all(
+                    color: themeData.colorScheme.secondaryContainer,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.settings,
+                          color: themeData.iconTheme.color,
+                          size: themeData.iconTheme.size,
+                        ),
+                        const SizedBox(width: 6.0),
+                        Text(
+                          'User',
                           style: themeData.textTheme.bodyLarge,
                         ),
                       ],

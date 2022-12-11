@@ -56,7 +56,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () {
                         authenticationProvider.changeHomeState(AuthenticationState.login);
                       },
-                      child: const Text('Already have an account? Login here'),
+                      child: Text(
+                        'Already have an account? Login here',
+                        style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+                      ),
                     ),
                   ],
                 ),
@@ -193,7 +196,52 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
               ),
             ),
           const SizedBox(height: 12),
-          InkWell(
+          OutlinedButton(
+            onPressed: () async {
+              if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()) {
+                try {
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
+                    FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set({
+                      'firstName': _firstNameController.text,
+                      'familyName': _familyNameController.text,
+                      'email': _emailController.text,
+                      'uid': value.user!.uid,
+                      'nationalIdentityNo': '',
+                    }).then((value) {});
+                  });
+                } on FirebaseAuthException catch (e) {
+                  showWarningSnackBar(context, e.code.getError());
+                }
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: themeData.colorScheme.primary.withOpacity(0.5),
+                width: 1,
+              ),
+              backgroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()
+                  ? themeData.colorScheme.primary
+                  : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()
+                  ? themeData.colorScheme.onPrimaryContainer
+                  : themeData.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            child: Text(
+              'Register',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()
+                    ? themeData.colorScheme.primaryContainer
+                    : themeData.colorScheme.primary,
+              ),
+            ),
+          ),
+          /* InkWell(
             onTap: () async {
               if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()) {
                 try {
@@ -232,7 +280,7 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
                 ),
               ),
             ),
-          ),
+          ), */
         ],
       ),
     );

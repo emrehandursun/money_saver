@@ -51,7 +51,10 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {
                       authenticationProvider.changeHomeState(AuthenticationState.register);
                     },
-                    child: const Text('Don\'t have an account? Register here'),
+                    child: Text(
+                      'Don\'t have an account? Register here',
+                      style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+                    ),
                   ),
                 ],
               ),
@@ -130,11 +133,13 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
               }
               return null;
             },
-            onChanged: (value) => setState(() {}),
+            onChanged: (value) => setState(() {
+              isPasswordValidate = value.length >= 8;
+            }),
           ),
           const SizedBox(height: 12),
-          InkWell(
-            onTap: () async {
+          OutlinedButton(
+            onPressed: () async {
               if (_emailController.text.isValidEmail()) {
                 try {
                   await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
@@ -146,21 +151,24 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
                 }
               }
             },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: themeData.colorScheme.primary.withOpacity(0.5),
-                  width: 1,
-                ),
-                color: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: themeData.colorScheme.primary.withOpacity(0.5),
+                width: 1,
               ),
-              child: Text(
-                'Login',
-                style: TextStyle(
-                  color: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
-                ),
+              backgroundColor: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            child: Text(
+              'Login',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isPasswordValidate && _emailController.text.isValidEmail() ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
               ),
             ),
           ),

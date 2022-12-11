@@ -35,6 +35,11 @@ class ApplicationProvider with ChangeNotifier, DiagnosticableTreeMixin {
     }
   }
 
+  Future<void> changeStatus(ProgramStatus status) async {
+    this.status = status;
+    notifyListeners();
+  }
+
   void setNavigationBarPage(NavigationBarPage page) {
     selectedNavigationBarPage = page;
     switch (page) {

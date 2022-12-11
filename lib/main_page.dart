@@ -73,9 +73,9 @@ class _MainPageState extends State<MainPage> {
 
       default:
         return Scaffold(
-          backgroundColor: themeData.colorScheme.primary,
+          backgroundColor: themeData.colorScheme.onPrimaryContainer,
           body: Center(
-            child: Loader(color: themeData.colorScheme.onPrimary),
+            child: Loader(color: themeData.colorScheme.primary),
           ),
         );
     }
