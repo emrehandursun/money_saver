@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:money_saver/models/customer/customer.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/customer/customer_provider.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -29,13 +33,27 @@ class _UserPageState extends State<UserPage> {
           style: themeData.appBarTheme.titleTextStyle,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child: SingleChildScrollView(
-          child: Column(
-            children: const [],
-          ),
-        ),
+      body: FutureBuilder<Customer?>(
+        future: context.read<CustomerProvider>().getCurrent(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final customer = snapshot.data;
+            return Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 8),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(customer!.user!.userFullName!),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }
