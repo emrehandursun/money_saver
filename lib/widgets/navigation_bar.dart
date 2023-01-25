@@ -94,7 +94,7 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
           const SizedBox(height: 2.0),
           Text(
             title,
-            style: themeData.textTheme.headline6?.copyWith(
+            style: themeData.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.normal,
               fontSize: 11.0,
               height: 1.65,

@@ -44,7 +44,7 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.error, size: 64, color: themeData.errorColor),
+              Icon(Icons.error, size: 64, color: themeData.colorScheme.error),
               const Text(
                 'Application Initilization Error',
                 textAlign: TextAlign.center,

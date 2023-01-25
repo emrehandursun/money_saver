@@ -210,7 +210,7 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
                     }).then((value) {});
                   });
                 } on FirebaseAuthException catch (e) {
-                  showWarningSnackBar(context, e.code.getError());
+                  showFlushBar(context, e.code.getError());
                 }
               }
             },
@@ -241,46 +241,6 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
               ),
             ),
           ),
-          /* InkWell(
-            onTap: () async {
-              if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()) {
-                try {
-                  await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
-                    FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set({
-                      'firstName': _firstNameController.text,
-                      'familyName': _familyNameController.text,
-                      'email': _emailController.text,
-                      'uid': value.user!.uid,
-                      'nationalIdentityNo': '',
-                    }).then((value) {});
-                  });
-                } on FirebaseAuthException catch (e) {
-                  showWarningSnackBar(context, e.code.getError());
-                }
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: themeData.colorScheme.primary.withOpacity(0.5),
-                  width: 1,
-                ),
-                color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()
-                    ? themeData.colorScheme.primary
-                    : themeData.colorScheme.onPrimaryContainer,
-              ),
-              child: Text(
-                'Register',
-                style: TextStyle(
-                  color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()
-                      ? themeData.colorScheme.primaryContainer
-                      : themeData.colorScheme.primary,
-                ),
-              ),
-            ),
-          ), */
         ],
       ),
     );

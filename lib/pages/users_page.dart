@@ -61,7 +61,7 @@ class _UsersPageState extends State<UsersPage> {
                         onTap: () {
                           final newCityRef = FirebaseFirestore.instance.collection("cities").doc();
                           final data = {"name": "Tokyo", "country": "Japan", "id": newCityRef.id};
-                          newCityRef.set(data).then((_) => print("Added Data with ID: ${newCityRef.id}"));
+                          newCityRef.set(data).then((_) => debugPrint("Added Data with ID: ${newCityRef.id}"));
                           //FirebaseFirestore.instance.collection("cities").add(data).then((documentSnapshot) => print("Added Data with ID: ${documentSnapshot.id}"));
                         },
                         child: const Text('data')),

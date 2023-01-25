@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:money_saver/provider/customer/customer_provider.dart';
+import 'package:money_saver/widgets/loader.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -26,14 +28,21 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           final settingsProvider = context.watch<SettingsProvider>();
-          return MaterialApp(
-            theme: settingsProvider.themeStatus == ThemeStatus.light ? themeProvider.lightTheme : themeProvider.darkTheme,
-            debugShowCheckedModeBanner: false,
-            home: const SafeArea(
-              top: false,
-              child: MainPage(),
+          final ThemeData themeData = settingsProvider.themeStatus == ThemeStatus.light ? themeProvider.lightTheme : themeProvider.darkTheme;
+          return GlobalLoaderOverlay(
+            useDefaultLoading: false,
+            overlayWidget: Center(
+              child: Loader(color: themeData.colorScheme.primary),
             ),
-            routes: _getRoutes(),
+            child: MaterialApp(
+              theme: themeData,
+              debugShowCheckedModeBanner: false,
+              home: const SafeArea(
+                top: false,
+                child: MainPage(),
+              ),
+              routes: _getRoutes(),
+            ),
           );
         },
       ),

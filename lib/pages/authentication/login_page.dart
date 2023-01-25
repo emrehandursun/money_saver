@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:money_saver/extensions/string_extensions.dart';
 import 'package:provider/provider.dart';
 
@@ -142,12 +143,15 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
             onPressed: () async {
               if (_emailController.text.isValidEmail()) {
                 try {
+                  context.loaderOverlay.show();
                   await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
                     final ApplicationProvider applicationProvider = Provider.of<ApplicationProvider>(context, listen: false);
                     applicationProvider.setNavigationBarPage(NavigationBarPage.home);
                   });
                 } on FirebaseAuthException catch (e) {
-                  showWarningSnackBar(context, e.code.getError());
+                  showFlushBar(context, e.code.getError());
+                } finally {
+                  context.loaderOverlay.hide();
                 }
               }
             },

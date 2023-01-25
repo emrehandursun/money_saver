@@ -30,7 +30,7 @@ class Loader extends StatelessWidget {
                       Text(
                         prompt!,
                         textAlign: TextAlign.center,
-                        style: themeData.textTheme.headline6?.copyWith(
+                        style: themeData.textTheme.titleLarge?.copyWith(
                           color: color ?? (invertColor ? themeData.colorScheme.background : themeData.colorScheme.onBackground),
                         ),
                       ),
