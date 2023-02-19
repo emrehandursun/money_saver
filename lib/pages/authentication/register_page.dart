@@ -48,17 +48,18 @@ class _RegisterPageState extends State<RegisterPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      child: RegisterForm(context: context),
-                    ),
+                    if (authenticationProvider.authenticationState == AuthenticationState.loginWithEmail || authenticationProvider.authenticationState == AuthenticationState.registerWithEmail)
+                      _registerWithEmail(authenticationProvider, themeData, context),
+                    if (authenticationProvider.authenticationState == AuthenticationState.loginWithPhoneNumber ||
+                        authenticationProvider.authenticationState == AuthenticationState.registerWithPhoneNumber)
+                      _registerWithPhoneNumber(authenticationProvider, themeData, context),
                     TextButton(
                       onPressed: () {
-                        authenticationProvider.changeHomeState(AuthenticationState.login);
+                        authenticationProvider.changeHomeState(AuthenticationState.wellCome);
                       },
                       child: Text(
-                        'Already have an account? Login here',
-                        style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+                        'Back',
+                        style: TextStyle(fontSize: 14, color: themeData.colorScheme.primary),
                       ),
                     ),
                   ],
@@ -70,17 +71,57 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  Widget _registerWithEmail(AuthenticationProvider authenticationProvider, ThemeData themeData, BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: RegisterWithEmailForm(context: context),
+        ),
+        TextButton(
+          onPressed: () {
+            authenticationProvider.changeHomeState(AuthenticationState.loginWithEmail);
+          },
+          child: Text(
+            'Already have an account? Login here',
+            style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _registerWithPhoneNumber(AuthenticationProvider authenticationProvider, ThemeData themeData, BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: RegisterWithPhoneNumberForm(context: context),
+        ),
+        TextButton(
+          onPressed: () {
+            authenticationProvider.changeHomeState(AuthenticationState.loginWithPhoneNumber);
+          },
+          child: Text(
+            'Already have an account? Login here',
+            style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class RegisterForm extends StatefulWidget {
+class RegisterWithEmailForm extends StatefulWidget {
   final BuildContext context;
-  const RegisterForm({Key? key, required this.context}) : super(key: key);
+  const RegisterWithEmailForm({Key? key, required this.context}) : super(key: key);
 
   @override
-  State<RegisterForm> createState() => _RegisterFormState();
+  State<RegisterWithEmailForm> createState() => _RegisterWithEmailFormState();
 }
 
-class _RegisterFormState extends State<RegisterForm> with DialogComposer {
+class _RegisterWithEmailFormState extends State<RegisterWithEmailForm> with DialogComposer {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _familyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -93,12 +134,12 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
   void initState() {
     controller = widget.context.watch<AuthenticationProvider>();
     controller.addListener(() {
-      if (controller.authenticationState == AuthenticationState.login) {
+      if (controller.authenticationState == AuthenticationState.loginWithEmail) {
         _firstNameController.clear();
         _familyNameController.clear();
         _emailController.clear();
         _passwordController.clear();
-      } else if (controller.authenticationState == AuthenticationState.register) {
+      } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
         _firstNameController.clear();
         _familyNameController.clear();
         _emailController.clear();
@@ -244,5 +285,20 @@ class _RegisterFormState extends State<RegisterForm> with DialogComposer {
         ],
       ),
     );
+  }
+}
+
+class RegisterWithPhoneNumberForm extends StatefulWidget {
+  final BuildContext context;
+  const RegisterWithPhoneNumberForm({super.key, required this.context});
+
+  @override
+  State<RegisterWithPhoneNumberForm> createState() => _RegisterWithPhoneNumberFormState();
+}
+
+class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberForm> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

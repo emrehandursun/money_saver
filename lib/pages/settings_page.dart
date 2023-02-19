@@ -13,7 +13,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    bool isLightTheme = widget.settingsProvider.themeStatus == ThemeStatus.light ? true : false;
     final themeData = Theme.of(context);
     return Scaffold(
       backgroundColor: themeData.colorScheme.primaryContainer,
@@ -55,36 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       'Theme Mode :',
                       style: themeData.textTheme.bodySmall,
                     ),
-                    Row(
-                      children: [
-                        isLightTheme
-                            ? Text(
-                                'Light',
-                                style: themeData.textTheme.bodySmall,
-                              )
-                            : Text(
-                                'Night',
-                                style: themeData.textTheme.bodySmall,
-                              ),
-                        const SizedBox(width: 6.0),
-                        Switch.adaptive(
-                          value: isLightTheme,
-                          activeColor: themeData.colorScheme.primary,
-                          onChanged: (value) {
-                            setState(
-                              () {
-                                isLightTheme = value;
-                                if (isLightTheme) {
-                                  widget.settingsProvider.setThemeStatus(ThemeStatus.light);
-                                } else {
-                                  widget.settingsProvider.setThemeStatus(ThemeStatus.dark);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    ChanceTheme(settingsProvider: widget.settingsProvider)
                   ],
                 ),
               ),
@@ -92,6 +62,52 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ChanceTheme extends StatefulWidget {
+  final SettingsProvider settingsProvider;
+  const ChanceTheme({Key? key, required this.settingsProvider}) : super(key: key);
+
+  @override
+  State<ChanceTheme> createState() => _ChanceThemeState();
+}
+
+class _ChanceThemeState extends State<ChanceTheme> {
+  @override
+  Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+    bool isLightTheme = widget.settingsProvider.themeStatus == ThemeStatus.light ? true : false;
+    return Row(
+      children: [
+        isLightTheme
+            ? Text(
+                'Light',
+                style: themeData.textTheme.bodySmall,
+              )
+            : Text(
+                'Night',
+                style: themeData.textTheme.bodySmall,
+              ),
+        const SizedBox(width: 6.0),
+        Switch.adaptive(
+          value: isLightTheme,
+          activeColor: themeData.colorScheme.primary,
+          onChanged: (value) {
+            setState(
+              () {
+                isLightTheme = value;
+                if (isLightTheme) {
+                  widget.settingsProvider.setThemeStatus(ThemeStatus.light);
+                } else {
+                  widget.settingsProvider.setThemeStatus(ThemeStatus.dark);
+                }
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }

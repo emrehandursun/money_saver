@@ -36,25 +36,18 @@ class LoginPage extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: themeData.colorScheme.primary.withOpacity(0.2),
-                        width: 2,
-                      ),
-                      color: themeData.colorScheme.onPrimaryContainer,
-                    ),
-                    child: LoginForm(context: context),
-                  ),
+                  if (authenticationProvider.authenticationState == AuthenticationState.loginWithEmail || authenticationProvider.authenticationState == AuthenticationState.registerWithEmail)
+                    _loginWithEmail(authenticationProvider, themeData, context),
+                  if (authenticationProvider.authenticationState == AuthenticationState.loginWithPhoneNumber ||
+                      authenticationProvider.authenticationState == AuthenticationState.registerWithPhoneNumber)
+                    _loginWithPhoneNumber(authenticationProvider, themeData, context),
                   TextButton(
                     onPressed: () {
-                      authenticationProvider.changeHomeState(AuthenticationState.register);
+                      authenticationProvider.changeHomeState(AuthenticationState.wellCome);
                     },
                     child: Text(
-                      'Don\'t have an account? Register here',
-                      style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+                      'Back',
+                      style: TextStyle(fontSize: 14, color: themeData.colorScheme.primary),
                     ),
                   ),
                 ],
@@ -65,17 +58,73 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _loginWithEmail(AuthenticationProvider authenticationProvider, ThemeData themeData, BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: themeData.colorScheme.primary.withOpacity(0.2),
+              width: 2,
+            ),
+            color: themeData.colorScheme.onPrimaryContainer,
+          ),
+          child: LoginWithEmailForm(context: context),
+        ),
+        TextButton(
+          onPressed: () {
+            authenticationProvider.changeHomeState(AuthenticationState.registerWithEmail);
+          },
+          child: Text(
+            'Don\'t have an account? Register here',
+            style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _loginWithPhoneNumber(AuthenticationProvider authenticationProvider, ThemeData themeData, BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: themeData.colorScheme.primary.withOpacity(0.2),
+              width: 2,
+            ),
+            color: themeData.colorScheme.onPrimaryContainer,
+          ),
+          child: LoginWithPhoneNumberForm(context: context),
+        ),
+        TextButton(
+          onPressed: () {
+            authenticationProvider.changeHomeState(AuthenticationState.registerWithPhoneNumber);
+          },
+          child: Text(
+            'Don\'t have an account? Register here',
+            style: TextStyle(fontSize: 16, color: themeData.colorScheme.primary),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class LoginForm extends StatefulWidget {
+class LoginWithEmailForm extends StatefulWidget {
   final BuildContext context;
-  const LoginForm({Key? key, required this.context}) : super(key: key);
+  const LoginWithEmailForm({Key? key, required this.context}) : super(key: key);
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<LoginWithEmailForm> createState() => _LoginWithEmailFormState();
 }
 
-class _LoginFormState extends State<LoginForm> with DialogComposer {
+class _LoginWithEmailFormState extends State<LoginWithEmailForm> with DialogComposer {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isHidden = true;
@@ -86,10 +135,10 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
   void initState() {
     controller = widget.context.watch<AuthenticationProvider>();
     controller.addListener(() {
-      if (controller.authenticationState == AuthenticationState.login) {
+      if (controller.authenticationState == AuthenticationState.loginWithEmail) {
         _emailController.clear();
         _passwordController.clear();
-      } else if (controller.authenticationState == AuthenticationState.register) {
+      } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
         _emailController.clear();
         _passwordController.clear();
       }
@@ -179,5 +228,20 @@ class _LoginFormState extends State<LoginForm> with DialogComposer {
         ],
       ),
     );
+  }
+}
+
+class LoginWithPhoneNumberForm extends StatefulWidget {
+  final BuildContext context;
+  const LoginWithPhoneNumberForm({super.key, required this.context});
+
+  @override
+  State<LoginWithPhoneNumberForm> createState() => _LoginWithPhoneNumberFormState();
+}
+
+class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
