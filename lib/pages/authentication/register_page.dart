@@ -126,6 +126,7 @@ class RegisterWithEmailForm extends StatefulWidget {
 }
 
 class _RegisterWithEmailFormState extends State<RegisterWithEmailForm> with DialogComposer {
+  model.User user = model.User();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _familyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -244,15 +245,11 @@ class _RegisterWithEmailFormState extends State<RegisterWithEmailForm> with Dial
           OutlinedButton(
             onPressed: () async {
               if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && isPasswordValidate && _emailController.text.isValidEmail()) {
+                fillUserData();
                 try {
                   await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((value) {
-                    FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set({
-                      'firstName': _firstNameController.text,
-                      'familyName': _familyNameController.text,
-                      'email': _emailController.text,
-                      'uid': value.user!.uid,
-                      'nationalIdentityNo': '',
-                    }).then((value) {});
+                    user.uid = value.user!.uid;
+                    FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set(user.toMap());
                   });
                 } on FirebaseAuthException catch (e) {
                   showFlushBar(context, e.code.getError());
@@ -290,6 +287,15 @@ class _RegisterWithEmailFormState extends State<RegisterWithEmailForm> with Dial
       ),
     );
   }
+
+  void fillUserData() {
+    user.email = _emailController.text;
+    user.firstName = _firstNameController.text;
+    user.familyName = _familyNameController.text;
+    user.nationalIdentityNo = '';
+    user.phoneNumber = '';
+    user.userFullName ??= '${user.firstName} ${user.familyName}';
+  }
 }
 
 class RegisterWithPhoneNumberForm extends StatefulWidget {
@@ -303,8 +309,7 @@ class RegisterWithPhoneNumberForm extends StatefulWidget {
 class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberForm> with DialogComposer {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _familyNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-
+  bool _isValidPhoneNumber = false;
   String initialCountry = 'TR';
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'TR');
   bool isHidden = true;
@@ -319,11 +324,11 @@ class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberFor
       if (controller.authenticationState == AuthenticationState.loginWithEmail) {
         _firstNameController.clear();
         _familyNameController.clear();
-        _phoneNumberController.clear();
+        phoneNumber = PhoneNumber(isoCode: 'TR');
       } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
         _firstNameController.clear();
         _familyNameController.clear();
-        _phoneNumberController.clear();
+        phoneNumber = PhoneNumber(isoCode: 'TR');
       }
     });
     super.initState();
@@ -376,7 +381,7 @@ class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberFor
             autoValidateMode: AutovalidateMode.disabled,
             selectorTextStyle: TextStyle(color: themeData.colorScheme.primary),
             initialValue: phoneNumber,
-            textFieldController: _phoneNumberController,
+            onInputValidated: (isValid) => _isValidPhoneNumber = isValid,
             formatInput: true,
             keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
             inputBorder: const OutlineInputBorder(),
@@ -384,7 +389,14 @@ class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberFor
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () async {
-              if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty) {
+              if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _isValidPhoneNumber) {
+                Customer? customer = await context.read<AuthenticationProvider>().getUserAccordingToPhoneNumber(phoneNumber.phoneNumber!);
+                if (customer != null) {
+                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) return;
+                  showFlushBar(context, 'This phone number is already registered');
+                  return;
+                }
                 fillUserData();
                 await FirebaseAuth.instance.verifyPhoneNumber(
                     phoneNumber: phoneNumber.phoneNumber!,
@@ -424,12 +436,10 @@ class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberFor
                 color: themeData.colorScheme.primary.withOpacity(0.5),
                 width: 1,
               ),
-              backgroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
-                  ? themeData.colorScheme.primary
-                  : themeData.colorScheme.onPrimaryContainer,
-              foregroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
-                  ? themeData.colorScheme.onPrimaryContainer
-                  : themeData.colorScheme.primary,
+              backgroundColor:
+                  _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _isValidPhoneNumber ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor:
+                  _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _isValidPhoneNumber ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.primary,
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
@@ -440,9 +450,7 @@ class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberFor
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
-                    ? themeData.colorScheme.primaryContainer
-                    : themeData.colorScheme.primary,
+                color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _isValidPhoneNumber ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
               ),
             ),
           ),

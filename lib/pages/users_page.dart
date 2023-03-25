@@ -104,7 +104,7 @@ Future<List<model.User>?> getAllUsers() async {
 
 Future<List<model.User>?> getUser(String query) async {
   List<model.User> userList = [];
-  await FirebaseFirestore.instance.collection('users').where('firstName', isEqualTo: query).get().then(
+  await FirebaseFirestore.instance.collection('users').where('FirstName', isEqualTo: query).get().then(
     (allUsers) {
       for (final user in allUsers.docs) {
         userList.add(model.User.fromMap(user.data()));

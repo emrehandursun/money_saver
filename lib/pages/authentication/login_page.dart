@@ -242,8 +242,7 @@ class LoginWithPhoneNumberForm extends StatefulWidget {
 }
 
 class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> with DialogComposer {
-  final TextEditingController _phoneNumberController = TextEditingController();
-
+  bool _isValidPhoneNumber = false;
   String initialCountry = 'TR';
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'TR');
   bool isHidden = true;
@@ -256,9 +255,9 @@ class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> wit
     controller = widget.context.watch<AuthenticationProvider>();
     controller.addListener(() {
       if (controller.authenticationState == AuthenticationState.loginWithEmail) {
-        _phoneNumberController.clear();
+        phoneNumber = PhoneNumber(isoCode: 'TR');
       } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
-        _phoneNumberController.clear();
+        phoneNumber = PhoneNumber(isoCode: 'TR');
       }
     });
     super.initState();
@@ -284,8 +283,8 @@ class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> wit
             ignoreBlank: false,
             autoValidateMode: AutovalidateMode.disabled,
             selectorTextStyle: TextStyle(color: themeData.colorScheme.primary),
+            onInputValidated: (isValid) => _isValidPhoneNumber = isValid,
             initialValue: phoneNumber,
-            textFieldController: _phoneNumberController,
             formatInput: true,
             keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
             inputBorder: const OutlineInputBorder(),
@@ -293,7 +292,7 @@ class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> wit
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () async {
-              if (_phoneNumberController.text.isNotEmpty) {
+              if (_isValidPhoneNumber) {
                 await FirebaseAuth.instance.verifyPhoneNumber(
                     phoneNumber: phoneNumber.phoneNumber!,
                     verificationCompleted: (PhoneAuthCredential credential) async {
@@ -326,8 +325,8 @@ class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> wit
                 color: themeData.colorScheme.primary.withOpacity(0.5),
                 width: 1,
               ),
-              backgroundColor: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
-              foregroundColor: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.primary,
+              backgroundColor: _isValidPhoneNumber ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor: _isValidPhoneNumber ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.primary,
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
@@ -338,7 +337,7 @@ class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> wit
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
+                color: _isValidPhoneNumber ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
               ),
             ),
           ),

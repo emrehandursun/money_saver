@@ -91,4 +91,25 @@ class AuthenticationProvider with ChangeNotifier, DiagnosticableTreeMixin, Dialo
     notifyListeners();
     return null;
   }
+
+  Future<Customer?> getUserAccordingToPhoneNumber(String phoneNumber) async {
+    models.User? user;
+    user = await FirebaseFirestore.instance.collection('users').where('PhoneNumber', isEqualTo: phoneNumber).get().then((value) {
+      if (value.docs.isEmpty) {
+        return null;
+      } else {
+        return models.User.fromMap(
+          value.docs.first.data(),
+        );
+      }
+    });
+    if (user != null) {
+      final Customer customer = Customer();
+      customer.user = user;
+      currentCustomer = customer;
+      return customer;
+    }
+    notifyListeners();
+    return null;
+  }
 }
