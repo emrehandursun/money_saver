@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:money_saver/extensions/string_extensions.dart';
+import 'package:money_saver/pages/authentication/verification_page.dart';
 import 'package:provider/provider.dart';
 
 import '../../extensions/input_decorations.dart';
@@ -239,9 +241,109 @@ class LoginWithPhoneNumberForm extends StatefulWidget {
   State<LoginWithPhoneNumberForm> createState() => _LoginWithPhoneNumberFormState();
 }
 
-class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> {
+class _LoginWithPhoneNumberFormState extends State<LoginWithPhoneNumberForm> with DialogComposer {
+  final TextEditingController _phoneNumberController = TextEditingController();
+
+  String initialCountry = 'TR';
+  PhoneNumber phoneNumber = PhoneNumber(isoCode: 'TR');
+  bool isHidden = true;
+  bool isPasswordValidate = false;
+  PhoneAuthCredential? credential;
+
+  var controller = AuthenticationProvider();
+  @override
+  void initState() {
+    controller = widget.context.watch<AuthenticationProvider>();
+    controller.addListener(() {
+      if (controller.authenticationState == AuthenticationState.loginWithEmail) {
+        _phoneNumberController.clear();
+      } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
+        _phoneNumberController.clear();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final ThemeData themeData = Theme.of(context);
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          InternationalPhoneNumberInput(
+            textStyle: TextStyle(color: themeData.colorScheme.primary),
+            inputDecoration: inputDecoration(themeData, 'Phone Number'),
+            onInputChanged: (PhoneNumber number) {
+              phoneNumber = number;
+              debugPrint(phoneNumber.phoneNumber);
+            },
+            selectorConfig: const SelectorConfig(
+              selectorType: PhoneInputSelectorType.DIALOG,
+            ),
+            ignoreBlank: false,
+            autoValidateMode: AutovalidateMode.disabled,
+            selectorTextStyle: TextStyle(color: themeData.colorScheme.primary),
+            initialValue: phoneNumber,
+            textFieldController: _phoneNumberController,
+            formatInput: true,
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            inputBorder: const OutlineInputBorder(),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () async {
+              if (_phoneNumberController.text.isNotEmpty) {
+                await FirebaseAuth.instance.verifyPhoneNumber(
+                    phoneNumber: phoneNumber.phoneNumber!,
+                    verificationCompleted: (PhoneAuthCredential credential) async {
+                      await FirebaseAuth.instance.signInWithCredential(credential);
+                    },
+                    verificationFailed: (FirebaseAuthException e) {},
+                    codeSent: (verificationId, forceResendingToken) {
+                      showFlushBar(context, 'Code Sent');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerificationCodePage(
+                            verificationId: verificationId,
+                            onVerificationCompleted: (phoneAuthCredential) async {
+                              try {
+                                await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+                              } finally {
+                                Navigator.popUntil(context, (route) => route.isFirst);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    codeAutoRetrievalTimeout: (verificationId) {});
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: themeData.colorScheme.primary.withOpacity(0.5),
+                width: 1,
+              ),
+              backgroundColor: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.primary : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            child: Text(
+              'Login',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: _phoneNumberController.text.isNotEmpty ? themeData.colorScheme.primaryContainer : themeData.colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

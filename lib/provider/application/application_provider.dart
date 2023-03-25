@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:money_saver/provider/customer/customer_provider.dart';
+import 'package:money_saver/provider/authentication/authentication_provider.dart';
 import '../../firebase_options.dart';
 import '../../pages/home_page.dart';
 import '../../pages/profile_page.dart';
@@ -26,7 +26,7 @@ class ApplicationProvider with ChangeNotifier, DiagnosticableTreeMixin {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      await CustomerProvider().getCurrent();
+      await AuthenticationProvider().getCurrent();
       status = ProgramStatus.readyApp;
     } catch (e) {
       status = ProgramStatus.applicationError;

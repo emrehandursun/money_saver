@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:money_saver/extensions/input_decorations.dart';
 import 'package:money_saver/extensions/string_extensions.dart';
 import 'package:money_saver/mixin/dialog_composer.dart';
+import 'package:money_saver/models/user/user.dart' as model;
+import 'package:money_saver/pages/authentication/verification_page.dart';
 import 'package:money_saver/widgets/password_validator/password_validator.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/customer/customer.dart';
 import '../../provider/authentication/authentication_provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -296,9 +300,163 @@ class RegisterWithPhoneNumberForm extends StatefulWidget {
   State<RegisterWithPhoneNumberForm> createState() => _RegisterWithPhoneNumberFormState();
 }
 
-class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberForm> {
+class _RegisterWithPhoneNumberFormState extends State<RegisterWithPhoneNumberForm> with DialogComposer {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _familyNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+
+  String initialCountry = 'TR';
+  PhoneNumber phoneNumber = PhoneNumber(isoCode: 'TR');
+  bool isHidden = true;
+  bool isPasswordValidate = false;
+  PhoneAuthCredential? credential;
+  model.User user = model.User();
+  var controller = AuthenticationProvider();
+  @override
+  void initState() {
+    controller = widget.context.watch<AuthenticationProvider>();
+    controller.addListener(() {
+      if (controller.authenticationState == AuthenticationState.loginWithEmail) {
+        _firstNameController.clear();
+        _familyNameController.clear();
+        _phoneNumberController.clear();
+      } else if (controller.authenticationState == AuthenticationState.registerWithEmail) {
+        _firstNameController.clear();
+        _familyNameController.clear();
+        _phoneNumberController.clear();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final ThemeData themeData = Theme.of(context);
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _firstNameController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: inputDecoration(themeData, 'Name'),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your name';
+              }
+              return null;
+            },
+            onChanged: (value) => setState(() {}),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _familyNameController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: inputDecoration(themeData, 'Surname'),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your surname';
+              }
+              return null;
+            },
+            onChanged: (value) => setState(() {}),
+          ),
+          const SizedBox(height: 12),
+          InternationalPhoneNumberInput(
+            textStyle: TextStyle(color: themeData.colorScheme.primary),
+            inputDecoration: inputDecoration(themeData, 'Phone Number'),
+            onInputChanged: (PhoneNumber number) {
+              phoneNumber = number;
+              debugPrint(phoneNumber.phoneNumber);
+            },
+            selectorConfig: const SelectorConfig(
+              selectorType: PhoneInputSelectorType.DIALOG,
+            ),
+            ignoreBlank: false,
+            autoValidateMode: AutovalidateMode.disabled,
+            selectorTextStyle: TextStyle(color: themeData.colorScheme.primary),
+            initialValue: phoneNumber,
+            textFieldController: _phoneNumberController,
+            formatInput: true,
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            inputBorder: const OutlineInputBorder(),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () async {
+              if (_firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty) {
+                fillUserData();
+                await FirebaseAuth.instance.verifyPhoneNumber(
+                    phoneNumber: phoneNumber.phoneNumber!,
+                    verificationCompleted: (PhoneAuthCredential credential) async {
+                      await FirebaseAuth.instance.signInWithCredential(credential);
+                    },
+                    verificationFailed: (FirebaseAuthException e) {},
+                    codeSent: (verificationId, forceResendingToken) {
+                      showFlushBar(context, 'Code Sent');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerificationCodePage(
+                            verificationId: verificationId,
+                            onVerificationCompleted: (phoneAuthCredential) async {
+                              try {
+                                await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential).then((value) async {
+                                  user.uid = value.user!.uid;
+                                  Customer? customer = await context.read<AuthenticationProvider>().getUserAccordingToUid(user.uid!);
+                                  if (customer == null) {
+                                    FirebaseFirestore.instance.collection('users').doc(value.user!.uid).set(user.toMap());
+                                  }
+                                });
+                              } finally {
+                                Navigator.popUntil(context, (route) => route.isFirst);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    codeAutoRetrievalTimeout: (verificationId) {});
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: themeData.colorScheme.primary.withOpacity(0.5),
+                width: 1,
+              ),
+              backgroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
+                  ? themeData.colorScheme.primary
+                  : themeData.colorScheme.onPrimaryContainer,
+              foregroundColor: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
+                  ? themeData.colorScheme.onPrimaryContainer
+                  : themeData.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            child: Text(
+              'Register',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: _firstNameController.text.isNotEmpty && _familyNameController.text.isNotEmpty && _phoneNumberController.text.isNotEmpty
+                    ? themeData.colorScheme.primaryContainer
+                    : themeData.colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void fillUserData() {
+    user.firstName = _firstNameController.text;
+    user.familyName = _familyNameController.text;
+    user.phoneNumber = phoneNumber.phoneNumber!;
+    user.nationalIdentityNo = '';
+    user.email = '';
+    user.userFullName ??= '${user.firstName} ${user.familyName}';
   }
 }

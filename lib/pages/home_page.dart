@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:money_saver/provider/authentication/authentication_provider.dart';
-import 'package:money_saver/provider/customer/customer_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +22,7 @@ class _HomePageState extends State<HomePage> {
           try {
             context.loaderOverlay.show();
             context.read<AuthenticationProvider>().changeHomeState(AuthenticationState.wellCome);
-            final customer = await context.read<CustomerProvider>().getCurrent();
+            final customer = await context.read<AuthenticationProvider>().getCurrent();
             debugPrint(customer?.user?.email ?? "-");
             FirebaseAuth.instance.signOut();
           } finally {
@@ -31,7 +30,7 @@ class _HomePageState extends State<HomePage> {
           }
         },
         child: Text(
-          user?.email ?? '',
+          user?.email ?? user?.phoneNumber ?? "",
           style: themeData.textTheme.bodyLarge,
         ),
       ),

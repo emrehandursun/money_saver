@@ -45,6 +45,8 @@ dependencies:
   cloud_firestore: ^4.0.4
   firebase_core: ^2.1.1
   another_flushbar: ^1.12.29
+  intl_phone_number_input: ^0.7.2
+  pinput: ^2.2.31
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_saver/models/customer/customer.dart';
+import 'package:money_saver/provider/authentication/authentication_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../provider/customer/customer_provider.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -34,7 +33,7 @@ class _UserPageState extends State<UserPage> {
         ),
       ),
       body: FutureBuilder<Customer?>(
-        future: context.read<CustomerProvider>().getCurrent(),
+        future: context.read<AuthenticationProvider>().getCurrent(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final customer = snapshot.data;
